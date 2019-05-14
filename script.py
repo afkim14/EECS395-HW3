@@ -88,3 +88,7 @@ def download_image(quadkey):
     url= "http://h0.ortho.tiles.virtualearth.net/tiles/h%s.jpeg?g=131&" % (quadkey)
     with request.urlopen(url) as file:
             return Image.open(file)
+        
+        
+ def main():
+    lat1,lon1,lat2,lon2 = float(sys.argv[0]),float(sys.argv[1]),float(sys.argv[2]),float(sys.argv[3])
