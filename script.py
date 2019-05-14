@@ -1,5 +1,7 @@
 import math
 from math import cos, sin, pi, log, atan, exp, floor
+from urllib import request
+from PIL import Image
 
 EARTHRADIUS = 6378137
 MINLAT = -85.05112878
@@ -81,3 +83,8 @@ def quad_key_to_tileXY(quad_key, tileX, tileY):
             tileX |= mask
             tileY |= mask
         i-=1
+        
+def download_image(quadkey):
+    url= "http://h0.ortho.tiles.virtualearth.net/tiles/h%s.jpeg?g=131&" % (quadkey)
+    with request.urlopen(url) as file:
+            return Image.open(file)
