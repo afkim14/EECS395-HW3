@@ -10,7 +10,7 @@
 └── example_outputs
   └── oracle.png
   └── square.png
-
+  └── park.png
 
 ```
 
