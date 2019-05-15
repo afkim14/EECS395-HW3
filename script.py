@@ -117,11 +117,10 @@ def stitch_and_crop_image(pixels, x_tile1, y_tile1, x_tile2, y_tile2, level):
         for j in range(min_y_tile, max_y_tile+1):
             quad_key = tileXY_to_quad_key(i, j, level)
             image = get_image(quad_key)
-            error_img = get_image('111111111111111')
-            error_img.save('./null.png')
-            if (image == Image.open('./null.png')):
+            try:
+                final_image.paste(image, ((i - min_x_tile) * 256, (j - min_y_tile) * 256))
+            except:
                 continue
-            final_image.paste(image, ((i - min_x_tile) * 256, (j - min_y_tile) * 256))
 
     tilePixelX, tilePixelY = tileXY_to_pixelXY(min_x_tile, min_y_tile)
     cropped_image = final_image.crop((pixels[0][0] - tilePixelX, pixels[0][1] - tilePixelY , pixels[1][0] - tilePixelX, pixels[1][1] - tilePixelY))
