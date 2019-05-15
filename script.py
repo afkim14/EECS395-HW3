@@ -93,7 +93,7 @@ def get_image(quadkey):
     with request.urlopen(url) as file:
         return Image.open(file)
 
-def find_aerial_image(box_lat_lon):
+def find_aerial_image(box_lat_lon, tilediff):
     currLevel = 0
     while (currLevel < 23):
         x_pixel1, y_pixel1 = lat_long_to_pixelXY(box_lat_lon[0][0], box_lat_lon[0][1], currLevel)
@@ -104,12 +104,12 @@ def find_aerial_image(box_lat_lon):
         max_y_pixel = max(y_pixel1, y_pixel2)
         x_tile1, y_tile1 = pixelXY_to_tileXY(min_x_pixel, min_y_pixel)
         x_tile2, y_tile2 = pixelXY_to_tileXY(max_x_pixel, max_y_pixel)
-        if (abs(x_tile1 - x_tile2) >= 5 and abs(y_tile1 - y_tile2) >= 5):
-            stitch_and_crop_image([[min_x_pixel, min_y_pixel], [max_x_pixel, max_y_pixel]], x_tile1, y_tile1, x_tile2, y_tile2, currLevel)
+        if (abs(x_tile1 - x_tile2) >= tilediff and abs(y_tile1 - y_tile2) >= tilediff):
+            stitch_and_crop_image(box_lat_lon, [[min_x_pixel, min_y_pixel], [max_x_pixel, max_y_pixel]], x_tile1, y_tile1, x_tile2, y_tile2, currLevel, tilediff)
             break
         currLevel += 1
 
-def stitch_and_crop_image(pixels, x_tile1, y_tile1, x_tile2, y_tile2, level):
+def stitch_and_crop_image(box_lat_lon, pixels, x_tile1, y_tile1, x_tile2, y_tile2, level, tilediff):
     min_x_tile = min(x_tile1, x_tile2)
     max_x_tile = max(x_tile1, x_tile2)
     min_y_tile = min(y_tile1, y_tile2)
@@ -119,10 +119,11 @@ def stitch_and_crop_image(pixels, x_tile1, y_tile1, x_tile2, y_tile2, level):
         for j in range(min_y_tile, max_y_tile+1):
             quad_key = tileXY_to_quad_key(i, j, level)
             image = get_image(quad_key)
-            try:
+            if (image == Image.open('./empty_image.png') and tilediff > 1):
+                find_aerial_image(box_lat_lon, tilediff-1)
+                return
+            else:
                 final_image.paste(image, ((i - min_x_tile) * 256, (j - min_y_tile) * 256))
-            except:
-                continue
 
     tilePixelX, tilePixelY = tileXY_to_pixelXY(min_x_tile, min_y_tile)
     cropped_image = final_image.crop((pixels[0][0] - tilePixelX, pixels[0][1] - tilePixelY , pixels[1][0] - tilePixelX, pixels[1][1] - tilePixelY))
@@ -131,7 +132,10 @@ def stitch_and_crop_image(pixels, x_tile1, y_tile1, x_tile2, y_tile2, level):
 
 if __name__ == '__main__':
     if (len(sys.argv) < 5):
-        print("Please supply the lat lon box. Usage: python3 script.py [lat1] [lon1] [lat2] [lon2]")
+        print("Please supply the lat lon box. Usage: python3 script.py [lat1] [lon1] [lat2] [lon2] [tilediff]")
         exit(0)
     box_lat_lon = [[float(sys.argv[1]), float(sys.argv[2])], [float(sys.argv[3]), float(sys.argv[4])]]
-    find_aerial_image(box_lat_lon)
+    tiles = 5
+    if (len(sys.argv) > 5):
+        tiles = int(sys.argv[5])
+    find_aerial_image(box_lat_lon, tiles)
