@@ -119,7 +119,7 @@ def stitch_and_crop_image(box_lat_lon, pixels, x_tile1, y_tile1, x_tile2, y_tile
         for j in range(min_y_tile, max_y_tile+1):
             quad_key = tileXY_to_quad_key(i, j, level)
             image = get_image(quad_key)
-            if (image == Image.open('./empty_image.png') and tilediff > 1):
+            if (image == Image.open('./empty_image.png') and tilediff > 1): # MISSING IMAGE
                 find_aerial_image(box_lat_lon, tilediff-1)
                 return
             else:
