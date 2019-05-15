@@ -104,7 +104,7 @@ def find_aerial_image(box_lat_lon):
         max_y_pixel = max(y_pixel1, y_pixel2)
         x_tile1, y_tile1 = pixelXY_to_tileXY(min_x_pixel, min_y_pixel)
         x_tile2, y_tile2 = pixelXY_to_tileXY(max_x_pixel, max_y_pixel)
-        if (x_tile1 != x_tile2 and y_tile1 != y_tile2):
+        if (abs(x_tile1 - x_tile2) >= 5 and abs(y_tile1 - y_tile2) >= 5):
             stitch_and_crop_image([[min_x_pixel, min_y_pixel], [max_x_pixel, max_y_pixel]], x_tile1, y_tile1, x_tile2, y_tile2, currLevel)
             break
         currLevel += 1
