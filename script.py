@@ -3,6 +3,8 @@ import sys
 from PIL import Image
 from urllib import request
 from math import cos, sin, pi, log, atan, exp, floor
+from urllib import request
+from PIL import Image
 
 EARTHRADIUS = 6378137
 MINLAT = -85.05112878
